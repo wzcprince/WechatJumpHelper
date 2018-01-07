@@ -5,6 +5,8 @@
  微信跳一跳技术讨论QQ群148698890
  
  [更新日志](changelog.md)
+ 
+ Windows一键开始请移步[release](release)
 
 ## 功能简介
 
@@ -17,8 +19,7 @@
 
 ## 运行环境
 1. JAVA，最低版本为7.0，[官网下载](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
-2. adb驱动，[官网下载(需要翻墙)](https://developer.android.com/studio/releases/platform-tools.html)，或者到[这里](http://www.android-studio.org)下载SDK-tools，其中就包含adb
-3. 安卓手机，目前已适配分辨率
+2. 安卓手机，目前已适配分辨率
     * 1600x2560
     * 1440x2560
     * 1080x1920
