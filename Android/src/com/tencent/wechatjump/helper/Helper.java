@@ -2,6 +2,7 @@ package com.tencent.wechatjump.helper;
 
 import com.tencent.wechatjump.helper.bean.DesType;
 import com.tencent.wechatjump.helper.bean.Pixel;
+import com.tencent.wechatjump.helper.bean.Tuple2;
 import com.tencent.wechatjump.helper.util.Color;
 import com.tencent.wechatjump.helper.util.DesTypeChecker;
 import com.tencent.wechatjump.helper.util.FileUtil;
@@ -222,7 +223,12 @@ public class Helper {
                 // 计算目标点类型
 
                 Pixel whitePointCenter = findWhitePointCenter(pixels, firstPixcel);
-                Pixel puerCenter = findPuerCenter(pixels, firstPixcel);
+				// 2018-01-07 实例化Tuple2的时候不能是原始类型（像int,double,char的等）。
+				// 参见 Java 泛型 | 菜鸟教程 <http://www.runoob.com/java/java-generics.html>
+				Tuple2<Pixel, Integer> t1 = findPuerCenter(pixels, firstPixcel);
+                Pixel puerCenter = t1.first;
+				int target_width = t1.second;
+				
 
                 DesType desType = DesTypeChecker.getDesType(pixels, firstPixcel, puerCenter);
 
@@ -265,9 +271,23 @@ public class Helper {
                 System.out.print("目标落点[" + des.x + ", " + des.y + "], " + desType.getName() + ", " + hasWhitePoint + ", 距离" + Math.round(distance) + "px, ");
                 calculateTime = System.currentTimeMillis() - tempTime;
                 tempTime += calculateTime;
+				int base_sleep_time = 1500;
+				
                 if (!DEBUG) {
                     // 执行跳跃
                     long pressTime = (long) (distance * jumpParam);
+					double intension = 40.0; // 误差强度
+					
+					if ( 20 < target_width && target_width < 300)
+					{	// 目标点比较小
+						base_sleep_time += (2500 + Math.random() * 4000);
+						intension = 10.0;
+					}
+					
+					double pressTimeRandom = (intension * (Math.random() * 2.0 - 1.0)); // [-20 ~ 20]
+					pressTime += pressTimeRandom;
+
+				
                     System.out.println("模拟按压" + pressTime + "ms.");
                     final int PRESS_Y = HelperUtil.transH(screenHeight, screenHeight / 2 - 250 + (int) (Math.random() * 500));
                     final int PRESS_X = HelperUtil.transW(screenWidth, screenWidth / 2 - 150 + (int) (Math.random() * 300));
@@ -282,6 +302,8 @@ public class Helper {
                     graphics.drawString(desType.getName() + "，" + hasWhitePoint, HelperUtil.transW(screenWidth, 10), HelperUtil.transW(screenWidth, 70));
                     graphics.drawString("跳跃距离" + Math.round(distance) + "px", HelperUtil.transW(screenWidth, 10), HelperUtil.transW(screenWidth, 135));
                     graphics.drawString("模拟按压" + pressTime + "ms", HelperUtil.transW(screenWidth, 10), HelperUtil.transW(screenWidth, 200));
+                    graphics.drawString("目标宽度" + target_width + " ", HelperUtil.transW(screenWidth, 10), HelperUtil.transW(screenWidth, 270));
+                    graphics.drawString("pressTimeRandom" + pressTimeRandom + " ", HelperUtil.transW(screenWidth, 10), HelperUtil.transW(screenWidth, 340));
                     ImageIO.write(image, "png", new File(markDir, cacheIndex + "_mark.png"));
                     recacheTime = System.currentTimeMillis() - tempTime;
                 } else {
@@ -302,9 +324,9 @@ public class Helper {
                 if (desType == DesType.COVER || desType == DesType.CUBE
                         || desType == DesType.SHOP || desType == DesType.DISC) {
                     // 特殊类型的落点，停留时间长了会加分
-                    Thread.sleep(2000);
+                    Thread.sleep(base_sleep_time + 500 + (long)distance);
                 } else {
-                    Thread.sleep(1500);
+                    Thread.sleep(base_sleep_time);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -315,7 +337,7 @@ public class Helper {
     /**
      * 获取纯平像素点中心，如果检测到不是纯平面，则返回null
      */
-    public Pixel findPuerCenter(Pixel[][] pixels, Pixel firstPixcel) {
+    public Tuple2<Pixel, Integer> findPuerCenter(Pixel[][] pixels, Pixel firstPixcel) {
 
         Pixel[] vertexs = HelperUtil.findVertexs(pixels, firstPixcel);
         Pixel puerLeft = vertexs[0];
@@ -345,8 +367,9 @@ public class Helper {
             puerCenter = pixels[(puerTop.y + puerBottom.y) / 2][(puerLeft.x + puerRight.x) / 2];
         } else {
             puerCenter = null;
+			puerWidth = 0;
         }
-        return puerCenter;
+        return new Tuple2<Pixel, Integer>(puerCenter, puerWidth);
     }
 
     /**

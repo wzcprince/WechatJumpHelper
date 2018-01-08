@@ -1,0 +1,4 @@
+Manifest-Version: 1.0  
+Created-By: wzc  
+Class-Path: .  
+Main-Class:  com.tencent.wechatjump.helper.Main  
