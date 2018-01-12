@@ -271,20 +271,34 @@ public class Helper {
                 System.out.print("目标落点[" + des.x + ", " + des.y + "], " + desType.getName() + ", " + hasWhitePoint + ", 距离" + Math.round(distance) + "px, ");
                 calculateTime = System.currentTimeMillis() - tempTime;
                 tempTime += calculateTime;
-				int base_sleep_time = 1500;
-				
+				int base_sleep_time = (int)(distance * 2 + Math.random() * 2000);
+
+				double d1 = (Math.random() - 0.5) * 4.8/11;
+				if ( d1 < 0.12 )
+				{
+					distance += 50;
+				}
+				else if ( d1 < 0.72 )
+				{
+					if ( target_width > 20)
+					{
+						distance += d1 * target_width;
+					}
+					else
+					{
+						distance += d1 * 200;
+					}
+				}
                 if (!DEBUG) {
                     // 执行跳跃
                     long pressTime = (long) (distance * jumpParam);
-					double intension = 40.0; // 误差强度
 					
 					if ( 20 < target_width && target_width < 300)
 					{	// 目标点比较小
-						base_sleep_time += (2500 + Math.random() * 4000);
-						intension = 10.0;
+						base_sleep_time += (3500 + Math.random() * 4000);
 					}
 					
-					double pressTimeRandom = (intension * (Math.random() * 2.0 - 1.0)); // [-20 ~ 20]
+					double pressTimeRandom = 0.0;//(intension * (Math.random() * 2.0 - 1.0)); // [-20 ~ 20]
 					pressTime += pressTimeRandom;
 
 				
@@ -324,7 +338,7 @@ public class Helper {
                 if (desType == DesType.COVER || desType == DesType.CUBE
                         || desType == DesType.SHOP || desType == DesType.DISC) {
                     // 特殊类型的落点，停留时间长了会加分
-                    Thread.sleep(base_sleep_time + 500 + (long)distance);
+                    Thread.sleep(base_sleep_time + 500 );
                 } else {
                     Thread.sleep(base_sleep_time);
                 }

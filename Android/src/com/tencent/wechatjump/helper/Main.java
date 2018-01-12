@@ -133,6 +133,8 @@ public class Main {
         if (jumpParam == 0) {
             System.out.print("暂时不兼容您的手机分辨率，请直接输入您的跳跃系数：");
         } else {
+            System.out.print("使用推荐跳跃系数为" + jumpParam );
+			/*
             System.out.print("推荐跳跃系数为" + jumpParam + "，是否使用系统推荐跳跃系数？(y/n)");
             while (true) {
                 String line = scanner.nextLine();
@@ -145,7 +147,7 @@ public class Main {
                 } else {
                     System.out.print("命令输入错误，请重新输入：");
                 }
-            }
+            }*/
         }
         while (jumpParam == 0) {
             String line = scanner.nextLine();
